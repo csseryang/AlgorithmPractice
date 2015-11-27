@@ -30,6 +30,48 @@ int latestNonConflict(Job arr[], int i)
     return -1;
 }
 
+// Find the latest job (in sorted array) that doesn't
+// conflict with the job[i]
+int latestNonConflict2(Job arr[], int i)
+{
+    for(int j = i-1; j>=0; j--)
+    {
+        if(arr[j].finish <= arr[i-1].start)
+            return j;
+    }
+    return -1;
+}
+
+// A recursive function that returns the maximum possible
+// profit from given array of jobs.  The array of jobs must
+// be sorted according to finish time.
+int findMaxProfitRec(Job arr[], int n)
+{
+     // Base case
+    if(n==1) return arr[n-1].profit;
+    
+    // Find profit when current job is inclueded
+    int inclProf = arr[n-1].profit;
+    int i = latestNonConflict2(arr, n);
+    if(i!= -1)
+        inclProf += findMaxProfitRec(arr, i+1);
+     
+     // Find profit when current job is excluded
+    int exclProf = findMaxProfitRec(arr, n-1);
+    
+    return max(inclProf, exclProf);
+}
+
+// The main function that returns the maximum possible
+// profit from given array of jobs
+int Call_findMaxProfitRec(Job arr[], int n)
+{
+    // Sort jobs according to finish time
+    sort(arr, arr+n, myfunction);
+ 
+    return findMaxProfitRec(arr, n);
+}
+
 // The main function that returns the maximum possible
 // profit from given array of jobs
 int findMaxProfit(Job arr[], int n)
@@ -67,5 +109,7 @@ int main()
     Job arr[] = {{3, 10, 20}, {1, 2, 50}, {6, 19, 100}, {2, 100, 200}};
     int n = sizeof(arr)/sizeof(arr[0]);
     cout << "The optimal profit is " << findMaxProfit(arr, n) <<endl;
+    
+     cout << "The optimal profit is " << Call_findMaxProfitRec(arr, n)<<endl;
     return 0;
 }
